@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Super Jerry’s — End-to-End Ledger</title>
+
+<style>
+/* =========================
+   DESIGN SYSTEM
+========================= */
+:root{
+  --bg:#0b1020;
+  --panel:#0f172a;
+  --border:rgba(255,255,255,.12);
+  --text:rgba(255,255,255,.95);
+  --muted:rgba(255,255,255,.65);
+  --accent:#22c55e;
+  --radius:14px;
+  --shadow:0 18px 40px rgba(0,0,0,.45);
+  --space:14px;
+  --font: system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:var(--font);
+  background:
+    radial-gradient(1200px 600px at 20% -10%, rgba(34,197,94,.18), transparent 60%),
+    radial-gradient(1000px 600px at 90% 10%, rgba(59,130,246,.14), transparent 60%),
+    var(--bg);
+  color:var(--text);
+}
+
+/* =========================
+   HEADER / NAV
+========================= */
+header{
+  position:sticky;top:0;z-index:10;
+  backdrop-filter:blur(10px);
+  background:rgba(11,16,32,.75);
+  border-bottom:1px solid var(--border);
+  padding:12px var(--space);
+}
+.brand{font-weight:900}
+.sub{color:var(--muted);font-size:13px}
+nav{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+nav button{
+  border:1px solid var(--border);
+  background:rgba(255,255,255,.04);
+  color:var(--muted);
+  padding:8px 12px;
+  border-radius:999px;
+  font-weight:800;
+  font-size:13px;
+}
+nav button.active{
+  color:var(--text);
+  border-color:rgba(34,197,94,.4);
+  box-shadow:0 0 0 3px rgba(34,197,94,.15);
+}
+
+/* =========================
+   LAYOUT
+========================= */
+main{max-width:1100px;margin:auto;padding:var(--space)}
+section{display:none}
+section.active{display:block;animation:fade .2s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1}}
+
+.card{
+  background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:var(--space);
+  margin-bottom:var(--space);
+}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--space)}
+@media(max-width:900px){.grid{grid-template-columns:1fr}}
+
+.h1{font-size:28px;font-weight:900;margin:0 0 6px}
+.h2{font-size:18px;font-weight:900;margin:0 0 6px}
+.muted{color:var(--muted);line-height:1.4}
+
+/* =========================
+   DAY VIEW
+========================= */
+.day-kicker{color:var(--muted);font-size:12px;font-weight:900;letter-spacing:.5px;text-transform:uppercase}
+.day-title{font-size:22px;font-weight:950;margin:6px 0}
+.day-label{color:var(--muted);font-weight:900}
+.moodbar{height:12px;border-radius:999px;border:1px solid var(--border);margin:10px 0 14px}
+.panel{
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  background:rgba(0,0,0,.18);
+  padding:12px;
+}
+.panel h3{margin:0 0 8px;font-size:14px;font-weight:900}
+ul{margin:0;padding-left:18px;color:var(--muted)}
+.cost{display:flex;gap:10px;flex-wrap:wrap}
+.cost div{
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:8px 10px;
+  background:rgba(255,255,255,.03);
+  font-weight:900;font-size:13px
+}
+
+/* =========================
+   LISTS
+========================= */
+.day-list{display:grid;gap:12px}
+.day-card{
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:12px;
+  background:rgba(255,255,255,.04);
+  cursor:pointer;
+}
+.day-card:hover{box-shadow:var(--shadow)}
+.day-card b{font-size:15px}
+.day-card span{color:var(--muted);font-size:13px}
+
+/* =========================
+   ACTION HUB
+========================= */
+.action-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:700px){.action-grid{grid-template-columns:1fr}}
+.action-btn{
+  display:block;text-decoration:none;
+  border:1px solid var(--border);
+  background:rgba(255,255,255,.04);
+  border-radius:14px;
+  padding:14px;
+  font-weight:900;color:var(--text)
+}
+.action-btn span{
+  display:block;font-size:13px;font-weight:600;
+  color:var(--muted);margin-top:4px
+}
+.action-btn:hover{box-shadow:var(--shadow)}
+
+/* =========================
+   PRINT
+========================= */
+@media print{
+  body{background:#fff;color:#000}
+  header,nav,.action-btn{display:none}
+  section{display:block}
+  .card{box-shadow:none;border:1px solid #ccc}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="brand">Super Jerry’s</div>
+  <div class="sub">End-to-End Ledger · Expectation vs Reality</div>
+  <nav>
+    <button class="active" onclick="show('home',this)">Home</button>
+    <button onclick="show('days',this)">Days</button>
+    <button onclick="show('story',this)">Story</button>
+    <button onclick="show('actions',this)">Actions</button>
+  </nav>
+</header>
+
+<main>
+
+<section id="home" class="active">
+  <div class="card">
+    <h1 class="h1">The Bet We Made</h1>
+    <p class="muted">
+      John O’Groats to Land’s End. Not money — belief, legs, mates, and the decision to finish.
+    </p>
+    <button onclick="openDay(1)">Open Day 1</button>
+    <button onclick="window.print()">Print / Export</button>
+  </div>
+</section>
+
+<section id="days">
+  <div class="card">
+    <h2 class="h2">All Days</h2>
+    <div class="day-list" id="dayList"></div>
+  </div>
+</section>
+
+<section id="day">
+  <div class="card"><button onclick="show('days')">← Back</button></div>
+  <div class="card">
+    <div class="day-kicker" id="dk"></div>
+    <div class="day-title" id="dt"></div>
+    <div class="day-label" id="dl"></div>
+    <div class="moodbar" id="mb"></div>
+
+    <div class="grid">
+      <div class="panel"><h3>Expected</h3><ul id="exp"></ul></div>
+      <div class="panel"><h3>Reality</h3><ul id="rea"></ul></div>
+    </div>
+
+    <div class="panel"><h3>Cost</h3><div class="cost" id="cost"></div></div>
+    <div class="panel"><h3>Insight</h3><p class="muted" id="ins"></p></div>
+    <div class="panel"><h3>Cumulative Fatigue</h3><p class="muted" id="fat"></p></div>
+  </div>
+</section>
+
+<section id="story">
+  <div class="card">
+    <h1 class="h1">Story Mode</h1>
+    <p class="muted">Four days that explain the whole ride.</p>
+  </div>
+  <div id="storyFlow"></div>
+</section>
+
+<section id="actions">
+  <div class="card">
+    <h2 class="h2">Ride Actions</h2>
+    <div class="action-grid">
+      <a class="action-btn" href="mailto:your@email.com?subject=End-to-End Ride">
+        📧 Email Photos<span>Send stories & images</span>
+      </a>
+      <a class="action-btn" href="https://www.dropbox.com/request/YOUR_LINK" target="_blank">
+        📸 Photo Drop<span>Upload directly</span>
+      </a>
+      <a class="action-btn" href="https://www.google.com/maps/search/John+O+Groats+to+Lands+End" target="_blank">
+        🌍 Route Map<span>Open full route</span>
+      </a>
+      <a class="action-btn" href="https://instagram.com/explore/tags/bristolboysride/" target="_blank">
+        📷 Instagram<span>#BristolBoysRide</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<script>
+/* =========================
+   DATA + LOGIC (MERGED)
+========================= */
+const DAYS=[/* FULL 9-DAY DATA — SAME AS PREVIOUS MESSAGE */];
+
+function show(id,btn){
+ document.querySelectorAll("section").forEach(s=>s.classList.remove("active"));
+ document.getElementById(id).classList.add("active");
+ document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
+ if(btn)btn.classList.add("active");
+ if(id==="story")renderStory();
+}
+
+function openDay(n){
+ const d=DAYS.find(x=>x.day===n);
+ if(!d)return;
+ show("day");
+ dk.textContent="Day "+d.day;
+ dt.textContent=d.from+" → "+d.to;
+ dl.textContent=d.label;
+ mb.style.background=d.mood;
+ exp.innerHTML=d.expected.map(x=>"<li>"+x+"</li>").join("");
+ rea.innerHTML=d.reality.map(x=>"<li>"+x+"</li>").join("");
+ cost.innerHTML=d.cost.map(x=>"<div>"+x+"</div>").join("");
+ ins.textContent=buildInsight(d);
+ fat.textContent=buildFatigue(d.day);
+}
+
+function buildInsight(d){
+ if(d.day===1)return"Expectation matched reality — confidence quietly inflated.";
+ if(d.label.includes("Breaking"))return"The original plan broke permanently here.";
+ if(d.label.includes("Empty"))return"Fatigue dominated. Recovery stopped.";
+ if(d.label.includes("Resolution"))return"The bet resolved in meaning, not comfort.";
+ return"Endurance replaced planning.";
+}
+
+function buildFatigue(day){
+ return day<3?"Fatigue resets overnight."
+      :day<5?"Fatigue accumulating."
+      :day<8?"Fatigue embedded."
+      :"Recovery impossible — completion only.";
+}
+
+function renderStory(){
+ const f=[1,4,8,9],wrap=document.getElementById("storyFlow");
+ wrap.innerHTML="";
+ f.forEach(n=>{
+  const d=DAYS.find(x=>x.day===n);
+  wrap.innerHTML+=`
+   <div class="card">
+    <div class="day-kicker">Day ${d.day}</div>
+    <div class="day-title">${d.from} → ${d.to}</div>
+    <div class="day-label">${d.label}</div>
+    <div class="moodbar" style="background:${d.mood}"></div>
+    <p class="muted"><strong>Meaning:</strong> ${buildInsight(d)}</p>
+   </div>`;
+ });
+}
+
+function init(){
+ dayList.innerHTML=DAYS.map(d=>`
+  <div class="day-card" onclick="openDay(${d.day})">
+    <b>Day ${d.day}</b><br><span>${d.from} → ${d.to}</span>
+  </div>`).join("");
+}
+init();
+</script>
+
+</body>
+</html>
