@@ -1,308 +1,764 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Super Jerry’s — End-to-End Ledger</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Super Jerrys – End to End</title>
 
-<style>
-/* =========================
-   DESIGN SYSTEM
-========================= */
-:root{
-  --bg:#0b1020;
-  --panel:#0f172a;
-  --border:rgba(255,255,255,.12);
-  --text:rgba(255,255,255,.95);
-  --muted:rgba(255,255,255,.65);
-  --accent:#22c55e;
-  --radius:14px;
-  --shadow:0 18px 40px rgba(0,0,0,.45);
-  --space:14px;
-  --font: system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
-}
-*{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:var(--font);
-  background:
-    radial-gradient(1200px 600px at 20% -10%, rgba(34,197,94,.18), transparent 60%),
-    radial-gradient(1000px 600px at 90% 10%, rgba(59,130,246,.14), transparent 60%),
-    var(--bg);
-  color:var(--text);
-}
+  <!-- iOS / PWA basics -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#071022" />
+  <meta name="color-scheme" content="dark" />
 
-/* =========================
-   HEADER / NAV
-========================= */
-header{
-  position:sticky;top:0;z-index:10;
-  backdrop-filter:blur(10px);
-  background:rgba(11,16,32,.75);
-  border-bottom:1px solid var(--border);
-  padding:12px var(--space);
-}
-.brand{font-weight:900}
-.sub{color:var(--muted);font-size:13px}
-nav{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
-nav button{
-  border:1px solid var(--border);
-  background:rgba(255,255,255,.04);
-  color:var(--muted);
-  padding:8px 12px;
-  border-radius:999px;
-  font-weight:800;
-  font-size:13px;
-}
-nav button.active{
-  color:var(--text);
-  border-color:rgba(34,197,94,.4);
-  box-shadow:0 0 0 3px rgba(34,197,94,.15);
-}
+  <style>
+    :root{
+      --bg0:#040812;
+      --bg1:#071022;
+      --card:#101c35;
+      --card2:#0d1730;
+      --line:#1b2b54;
+      --text:#e8eff7;
+      --muted:#a6bdd6;
+      --accent:#4fd1c5;
+      --accent2:#7aa7ff;
+      --danger:#ff6b6b;
+      --ok:#63ff9e;
+      --shadow: 0 14px 40px rgba(0,0,0,.35);
+      --radius: 18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,system-ui,sans-serif;
+      background: radial-gradient(1200px 700px at 30% -10%, #0a2a3a55, transparent 60%),
+                  radial-gradient(900px 500px at 90% 10%, #1b2a6a55, transparent 60%),
+                  linear-gradient(180deg, var(--bg0), var(--bg1));
+      color:var(--text);
+    }
 
-/* =========================
-   LAYOUT
-========================= */
-main{max-width:1100px;margin:auto;padding:var(--space)}
-section{display:none}
-section.active{display:block;animation:fade .2s ease}
-@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1}}
+    .wrap{max-width:980px;margin:0 auto;padding:18px 16px 46px}
+    .top{
+      padding: 16px 12px 10px;
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border: 1px solid rgba(255,255,255,.06);
+      box-shadow: var(--shadow);
+    }
+    .titleRow{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+      padding: 6px 6px 10px;
+    }
+    h1{margin:0;font-size:1.55rem;letter-spacing:.2px}
+    .sub{margin:.25rem 0 0;color:var(--muted);font-size:.95rem}
 
-.card{
-  background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));
-  border:1px solid var(--border);
-  border-radius:var(--radius);
-  box-shadow:var(--shadow);
-  padding:var(--space);
-  margin-bottom:var(--space);
-}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--space)}
-@media(max-width:900px){.grid{grid-template-columns:1fr}}
+    .chips{
+      display:flex;flex-wrap:wrap;gap:10px;
+      padding: 10px 6px 6px;
+    }
+    .btn{
+      appearance:none;border:1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:999px;
+      font-weight:600;
+      font-size:.92rem;
+      display:inline-flex;align-items:center;gap:8px;
+      cursor:pointer;
+      user-select:none;
+    }
+    .btn:active{transform:translateY(1px)}
+    .btnAccent{border-color:rgba(79,209,197,.45);color:var(--accent)}
+    .btnBlue{border-color:rgba(122,167,255,.45);color:var(--accent2)}
+    .btnDanger{border-color:rgba(255,107,107,.45);color:var(--danger)}
+    .btnOk{border-color:rgba(99,255,158,.35);color:var(--ok)}
 
-.h1{font-size:28px;font-weight:900;margin:0 0 6px}
-.h2{font-size:18px;font-weight:900;margin:0 0 6px}
-.muted{color:var(--muted);line-height:1.4}
+    .metaRow{
+      display:flex;flex-wrap:wrap;gap:10px;
+      padding: 8px 6px 4px;
+      color:var(--muted);
+      font-size:.92rem;
+    }
+    .pill{
+      padding:8px 10px;
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:999px;
+      background: rgba(0,0,0,.18);
+    }
 
-/* =========================
-   DAY VIEW
-========================= */
-.day-kicker{color:var(--muted);font-size:12px;font-weight:900;letter-spacing:.5px;text-transform:uppercase}
-.day-title{font-size:22px;font-weight:950;margin:6px 0}
-.day-label{color:var(--muted);font-weight:900}
-.moodbar{height:12px;border-radius:999px;border:1px solid var(--border);margin:10px 0 14px}
-.panel{
-  border:1px solid var(--border);
-  border-radius:var(--radius);
-  background:rgba(0,0,0,.18);
-  padding:12px;
-}
-.panel h3{margin:0 0 8px;font-size:14px;font-weight:900}
-ul{margin:0;padding-left:18px;color:var(--muted)}
-.cost{display:flex;gap:10px;flex-wrap:wrap}
-.cost div{
-  border:1px solid var(--border);
-  border-radius:10px;
-  padding:8px 10px;
-  background:rgba(255,255,255,.03);
-  font-weight:900;font-size:13px
-}
+    .grid{
+      margin-top:16px;
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:14px;
+    }
+    @media (min-width: 840px){
+      .grid{grid-template-columns: 1fr 1fr}
+    }
 
-/* =========================
-   LISTS
-========================= */
-.day-list{display:grid;gap:12px}
-.day-card{
-  border:1px solid var(--border);
-  border-radius:var(--radius);
-  padding:12px;
-  background:rgba(255,255,255,.04);
-  cursor:pointer;
-}
-.day-card:hover{box-shadow:var(--shadow)}
-.day-card b{font-size:15px}
-.day-card span{color:var(--muted);font-size:13px}
+    .card{
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border:1px solid rgba(255,255,255,.06);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .cardHead{
+      padding:14px 14px 8px;
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+      border-bottom:1px solid rgba(255,255,255,.06);
+      background: linear-gradient(180deg, rgba(0,0,0,.20), rgba(0,0,0,.02));
+    }
+    .cardHead h2{margin:0;font-size:1.06rem}
+    .cardHead small{display:block;color:var(--muted);margin-top:4px}
+    .tagRow{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
+    .tag{
+      font-size:.78rem;
+      padding:7px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.08);
+      color:var(--muted);
+      background: rgba(0,0,0,.16);
+      white-space:nowrap;
+    }
+    .tag a{color:inherit;text-decoration:none}
+    .cardBody{padding:12px 14px 14px}
+    .notes{color:var(--text);opacity:.92;line-height:1.45;font-size:.95rem}
+    .photos{
+      margin-top:10px;
+      display:grid;
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      gap:8px;
+    }
+    .ph{
+      position:relative;
+      width:100%;
+      height:110px;
+      border-radius:14px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.06);
+      background: rgba(0,0,0,.22);
+    }
+    .ph img{width:100%;height:100%;object-fit:cover;display:block}
+    .ph .x{
+      position:absolute;top:8px;right:8px;
+      border:none;border-radius:999px;
+      padding:6px 8px;
+      background: rgba(0,0,0,.55);
+      color:#fff;
+      font-weight:800;
+      cursor:pointer;
+      display:none;
+    }
+    .admin .ph .x{display:block}
 
-/* =========================
-   ACTION HUB
-========================= */
-.action-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media(max-width:700px){.action-grid{grid-template-columns:1fr}}
-.action-btn{
-  display:block;text-decoration:none;
-  border:1px solid var(--border);
-  background:rgba(255,255,255,.04);
-  border-radius:14px;
-  padding:14px;
-  font-weight:900;color:var(--text)
-}
-.action-btn span{
-  display:block;font-size:13px;font-weight:600;
-  color:var(--muted);margin-top:4px
-}
-.action-btn:hover{box-shadow:var(--shadow)}
+    .footer{
+      margin-top:18px;
+      text-align:center;
+      color:var(--muted);
+      font-size:.88rem;
+      padding-bottom: env(safe-area-inset-bottom);
+    }
 
-/* =========================
-   PRINT
-========================= */
-@media print{
-  body{background:#fff;color:#000}
-  header,nav,.action-btn{display:none}
-  section{display:block}
-  .card{box-shadow:none;border:1px solid #ccc}
-}
-</style>
+    /* Modal */
+    .modalBack{
+      position:fixed;inset:0;
+      background: rgba(0,0,0,.55);
+      display:none;
+      align-items:flex-end;
+      justify-content:center;
+      padding: 16px;
+      z-index:50;
+    }
+    .modal{
+      width:min(980px, 100%);
+      border-radius: 20px;
+      background: #071022;
+      border:1px solid rgba(255,255,255,.10);
+      box-shadow: 0 24px 70px rgba(0,0,0,.55);
+      overflow:hidden;
+    }
+    .modalTop{
+      padding:14px 14px 10px;
+      display:flex;justify-content:space-between;align-items:center;gap:10px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.01));
+    }
+    .modalTop b{font-size:1rem}
+    .modalBody{padding:14px}
+    textarea, input{
+      width:100%;
+      background: rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.10);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: .95rem;
+      outline:none;
+    }
+    textarea{min-height: 190px; resize: vertical}
+    .row{display:grid;grid-template-columns:1fr;gap:10px;margin-top:10px}
+    @media(min-width:840px){.row{grid-template-columns:1fr 1fr}}
+    .hint{color:var(--muted);font-size:.86rem;margin-top:8px;line-height:1.35}
+    .modalBtns{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
 </head>
 
 <body>
+  <div class="wrap">
+    <div class="top" id="top">
+      <div class="titleRow">
+        <div>
+          <h1>🚴 Super Jerrys</h1>
+          <div class="sub">Land’s End → John O’Groats • Timeline • Photos • One-tap drops</div>
+        </div>
+        <div class="tagRow">
+          <span class="tag">Offline-ready</span>
+          <span class="tag"><a href="#" onclick="toggleAdmin(event)">Hidden Admin</a></span>
+        </div>
+      </div>
 
-<header>
-  <div class="brand">Super Jerry’s</div>
-  <div class="sub">End-to-End Ledger · Expectation vs Reality</div>
-  <nav>
-    <button class="active" onclick="show('home',this)">Home</button>
-    <button onclick="show('days',this)">Days</button>
-    <button onclick="show('story',this)">Story</button>
-    <button onclick="show('actions',this)">Actions</button>
-  </nav>
-</header>
+      <div class="chips">
+        <button class="btn btnAccent" onclick="emailDrop()">📧 Photo Drop</button>
+        <button class="btn btnBlue" onclick="shareApp()">📱 Share</button>
+        <button class="btn" onclick="openRoute()">🗺 Route</button>
+        <button class="btn" onclick="openEditor()">🛠 Edit / Import / Export</button>
+      </div>
 
-<main>
-
-<section id="home" class="active">
-  <div class="card">
-    <h1 class="h1">The Bet We Made</h1>
-    <p class="muted">
-      John O’Groats to Land’s End. Not money — belief, legs, mates, and the decision to finish.
-    </p>
-    <button onclick="openDay(1)">Open Day 1</button>
-    <button onclick="window.print()">Print / Export</button>
-  </div>
-</section>
-
-<section id="days">
-  <div class="card">
-    <h2 class="h2">All Days</h2>
-    <div class="day-list" id="dayList"></div>
-  </div>
-</section>
-
-<section id="day">
-  <div class="card"><button onclick="show('days')">← Back</button></div>
-  <div class="card">
-    <div class="day-kicker" id="dk"></div>
-    <div class="day-title" id="dt"></div>
-    <div class="day-label" id="dl"></div>
-    <div class="moodbar" id="mb"></div>
-
-    <div class="grid">
-      <div class="panel"><h3>Expected</h3><ul id="exp"></ul></div>
-      <div class="panel"><h3>Reality</h3><ul id="rea"></ul></div>
+      <div class="metaRow">
+        <div class="pill" id="statDays">Days: —</div>
+        <div class="pill" id="statPhotos">Photos: —</div>
+        <div class="pill" id="statUpdated">Updated: —</div>
+      </div>
     </div>
 
-    <div class="panel"><h3>Cost</h3><div class="cost" id="cost"></div></div>
-    <div class="panel"><h3>Insight</h3><p class="muted" id="ins"></p></div>
-    <div class="panel"><h3>Cumulative Fatigue</h3><p class="muted" id="fat"></p></div>
-  </div>
-</section>
+    <div class="grid" id="grid"></div>
 
-<section id="story">
-  <div class="card">
-    <h1 class="h1">Story Mode</h1>
-    <p class="muted">Four days that explain the whole ride.</p>
-  </div>
-  <div id="storyFlow"></div>
-</section>
-
-<section id="actions">
-  <div class="card">
-    <h2 class="h2">Ride Actions</h2>
-    <div class="action-grid">
-      <a class="action-btn" href="mailto:your@email.com?subject=End-to-End Ride">
-        📧 Email Photos<span>Send stories & images</span>
-      </a>
-      <a class="action-btn" href="https://www.dropbox.com/request/YOUR_LINK" target="_blank">
-        📸 Photo Drop<span>Upload directly</span>
-      </a>
-      <a class="action-btn" href="https://www.google.com/maps/search/John+O+Groats+to+Lands+End" target="_blank">
-        🌍 Route Map<span>Open full route</span>
-      </a>
-      <a class="action-btn" href="https://instagram.com/explore/tags/bristolboysride/" target="_blank">
-        📷 Instagram<span>#BristolBoysRide</span>
-      </a>
+    <div class="footer">
+      Tip: On iPhone Safari → Share → <b>Add to Home Screen</b> for full-screen app.
     </div>
   </div>
-</section>
 
-</main>
+  <!-- Editor Modal -->
+  <div class="modalBack" id="modalBack" onclick="closeEditor(event)">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modalTop">
+        <b>🛠 Super Jerrys Editor</b>
+        <button class="btn btnDanger" onclick="closeEditor()">Close</button>
+      </div>
+      <div class="modalBody">
+        <div class="row">
+          <div>
+            <label class="hint">Paste / edit your timeline JSON here (this is the “database”).</label>
+            <textarea id="jsonBox" class="mono" spellcheck="false"></textarea>
+            <div class="modalBtns">
+              <button class="btn btnOk" onclick="saveJson()">✅ Save</button>
+              <button class="btn" onclick="loadJson()">↩️ Load Current</button>
+              <button class="btn btnBlue" onclick="copyJson()">📋 Copy</button>
+              <button class="btn" onclick="downloadJson()">⬇️ Download .json</button>
+              <label class="btn">
+                ⬆️ Import .json
+                <input id="fileIn" type="file" accept="application/json" style="display:none" onchange="importJsonFile(this.files[0])">
+              </label>
+            </div>
+          </div>
+
+          <div>
+            <label class="hint">Quick tools (admin mode):</label>
+            <div class="modalBtns">
+              <button class="btn" onclick="addDay()">➕ Add Day</button>
+              <button class="btn btnDanger" onclick="resetDemo()">♻️ Reset Demo</button>
+            </div>
+
+            <div class="hint" style="margin-top:10px">
+              <b>Photo picker:</b> in Admin mode you’ll see “Add Photos” on each day.  
+              Note: without a server, photos you pick are saved as local previews; for real hosting, put images in <span class="mono">/photos</span> and reference them.
+            </div>
+
+            <div class="hint" style="margin-top:10px">
+              <b>Hidden Admin toggle:</b> tap “Hidden Admin” 5 times quickly.
+            </div>
+
+            <div class="hint" style="margin-top:10px">
+              Want your real ride days dropped in automatically? Paste your day-by-day text and I’ll convert it into JSON ready for this app.
+            </div>
+
+            <input id="donateLink" placeholder="Optional: Donation link (e.g. JustGiving)" style="margin-top:12px" />
+            <div class="modalBtns">
+              <button class="btn btnAccent" onclick="saveDonate()">💷 Save Donation Link</button>
+              <button class="btn" onclick="openDonate()">Open Donation Link</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
 
 <script>
-/* =========================
-   DATA + LOGIC (MERGED)
-========================= */
-const DAYS=[/* FULL 9-DAY DATA — SAME AS PREVIOUS MESSAGE */];
+/* ==========================
+   1) DEFAULT DATA (DEMO)
+========================== */
+const DEMO = [
+  {
+    "id":"d1",
+    "day":"Day 1",
+    "date":"Start Day",
+    "title":"Land’s End → Bodmin",
+    "notes":"Fresh legs, nerves, big smiles. The adventure begins.",
+    "route":"https://www.google.com/maps/search/Land%27s+End+to+Bodmin",
+    "photos":[ "photos/day1-1.jpg", "photos/day1-2.jpg" ],
+    "tags":[ "Start", "Cornwall" ]
+  },
+  {
+    "id":"d2",
+    "day":"Day 2",
+    "date":"Into Devon",
+    "title":"Rolling Hills",
+    "notes":"Reality kicks in. Legs wake up. The team rhythm starts.",
+    "route":"https://www.google.com/maps/search/Bodmin+to+Exeter+cycling",
+    "photos":[],
+    "tags":[ "Devon", "Grit" ]
+  },
+  {
+    "id":"d3",
+    "day":"Hardest Day",
+    "date":"Arran → Gretna",
+    "title":"Headwinds & Long Miles",
+    "notes":"Morale tested. Proper grit required. Team pulls together.",
+    "route":"https://en.wikipedia.org/wiki/Gretna_Green",
+    "photos":[],
+    "tags":[ "Scotland", "Into England" ]
+  }
+];
 
-function show(id,btn){
- document.querySelectorAll("section").forEach(s=>s.classList.remove("active"));
- document.getElementById(id).classList.add("active");
- document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
- if(btn)btn.classList.add("active");
- if(id==="story")renderStory();
+/* ==========================
+   2) STORAGE
+========================== */
+const KEY = "superjerrys.timeline.v1";
+const KEY_META = "superjerrys.meta.v1";
+const KEY_DONATE = "superjerrys.donate.v1";
+
+function nowStamp(){
+  const d=new Date();
+  return d.toISOString().slice(0,19).replace("T"," ");
 }
 
-function openDay(n){
- const d=DAYS.find(x=>x.day===n);
- if(!d)return;
- show("day");
- dk.textContent="Day "+d.day;
- dt.textContent=d.from+" → "+d.to;
- dl.textContent=d.label;
- mb.style.background=d.mood;
- exp.innerHTML=d.expected.map(x=>"<li>"+x+"</li>").join("");
- rea.innerHTML=d.reality.map(x=>"<li>"+x+"</li>").join("");
- cost.innerHTML=d.cost.map(x=>"<div>"+x+"</div>").join("");
- ins.textContent=buildInsight(d);
- fat.textContent=buildFatigue(d.day);
+function loadTimeline(){
+  const raw = localStorage.getItem(KEY);
+  if(!raw){
+    localStorage.setItem(KEY, JSON.stringify(DEMO, null, 2));
+    localStorage.setItem(KEY_META, JSON.stringify({updated: nowStamp()}, null, 2));
+    return structuredClone(DEMO);
+  }
+  try{
+    const data = JSON.parse(raw);
+    return Array.isArray(data) ? data : structuredClone(DEMO);
+  }catch{
+    return structuredClone(DEMO);
+  }
 }
 
-function buildInsight(d){
- if(d.day===1)return"Expectation matched reality — confidence quietly inflated.";
- if(d.label.includes("Breaking"))return"The original plan broke permanently here.";
- if(d.label.includes("Empty"))return"Fatigue dominated. Recovery stopped.";
- if(d.label.includes("Resolution"))return"The bet resolved in meaning, not comfort.";
- return"Endurance replaced planning.";
+function saveTimeline(data){
+  localStorage.setItem(KEY, JSON.stringify(data, null, 2));
+  localStorage.setItem(KEY_META, JSON.stringify({updated: nowStamp()}, null, 2));
 }
 
-function buildFatigue(day){
- return day<3?"Fatigue resets overnight."
-      :day<5?"Fatigue accumulating."
-      :day<8?"Fatigue embedded."
-      :"Recovery impossible — completion only.";
+/* ==========================
+   3) RENDER
+========================== */
+let state = loadTimeline();
+let admin = false;
+
+function countPhotos(data){
+  let n=0;
+  for(const d of data) n += (d.photos?.length || 0);
+  return n;
 }
 
-function renderStory(){
- const f=[1,4,8,9],wrap=document.getElementById("storyFlow");
- wrap.innerHTML="";
- f.forEach(n=>{
-  const d=DAYS.find(x=>x.day===n);
-  wrap.innerHTML+=`
-   <div class="card">
-    <div class="day-kicker">Day ${d.day}</div>
-    <div class="day-title">${d.from} → ${d.to}</div>
-    <div class="day-label">${d.label}</div>
-    <div class="moodbar" style="background:${d.mood}"></div>
-    <p class="muted"><strong>Meaning:</strong> ${buildInsight(d)}</p>
-   </div>`;
- });
+function renderStats(){
+  const metaRaw = localStorage.getItem(KEY_META);
+  let updated = "—";
+  try{ updated = JSON.parse(metaRaw || "{}").updated || "—"; }catch{}
+  document.getElementById("statDays").textContent = `Days: ${state.length}`;
+  document.getElementById("statPhotos").textContent = `Photos: ${countPhotos(state)}`;
+  document.getElementById("statUpdated").textContent = `Updated: ${updated}`;
 }
 
-function init(){
- dayList.innerHTML=DAYS.map(d=>`
-  <div class="day-card" onclick="openDay(${d.day})">
-    <b>Day ${d.day}</b><br><span>${d.from} → ${d.to}</span>
-  </div>`).join("");
+function safe(s){ return String(s ?? ""); }
+
+function render(){
+  document.body.classList.toggle("admin", admin);
+
+  const grid = document.getElementById("grid");
+  grid.innerHTML = "";
+
+  for(const d of state){
+    const card = document.createElement("div");
+    card.className = "card";
+
+    const tags = (d.tags || []).map(t=>`<span class="tag">${safe(t)}</span>`).join("");
+    const routeTag = d.route ? `<span class="tag"><a href="${d.route}" target="_blank" rel="noopener">🗺 Route</a></span>` : "";
+    const adminTag = admin ? `<span class="tag">Admin</span>` : "";
+
+    const photosHtml = (d.photos || []).map((p, idx) => `
+      <div class="ph">
+        <img src="${p}" loading="lazy" alt="">
+        <button class="x" title="Remove" onclick="removePhoto('${d.id}', ${idx})">✕</button>
+      </div>
+    `).join("");
+
+    card.innerHTML = `
+      <div class="cardHead">
+        <div>
+          <h2>${safe(d.day)} — ${safe(d.title)}</h2>
+          <small>${safe(d.date || "")}</small>
+        </div>
+        <div class="tagRow">
+          ${routeTag}
+          ${tags}
+          ${adminTag}
+        </div>
+      </div>
+      <div class="cardBody">
+        <div class="notes">${safe(d.notes)}</div>
+        <div class="photos">${photosHtml}</div>
+        ${admin ? `
+          <div class="chips" style="padding:10px 0 0">
+            <button class="btn btnOk" onclick="editDay('${d.id}')">✏️ Edit Day</button>
+            <button class="btn" onclick="pickPhotos('${d.id}')">➕ Add Photos</button>
+            <button class="btn btnDanger" onclick="deleteDay('${d.id}')">🗑 Delete</button>
+          </div>
+        ` : ``}
+      </div>
+    `;
+
+    grid.appendChild(card);
+  }
+
+  renderStats();
 }
-init();
+
+/* ==========================
+   4) ACTION BUTTONS
+========================== */
+function emailDrop(){
+  const subject = encodeURIComponent("Super Jerrys Photo Drop");
+  const body = encodeURIComponent("Please attach photos, videos, routes or blogs 🚴‍♂️\n\nDay / location:\nNotes:\n");
+  location.href = `mailto:jerquick@icloud.com?subject=${subject}&body=${body}`;
+}
+
+function shareApp(){
+  const data = {
+    title: "Super Jerrys – End to End",
+    text: "Follow the Land’s End to John O’Groats ride timeline + photos",
+    url: location.href
+  };
+  if(navigator.share){
+    navigator.share(data).catch(()=>{});
+  } else {
+    prompt("Copy this link:", location.href);
+  }
+}
+
+function openRoute(){
+  const q = encodeURIComponent("Land's End to John O'Groats cycling route");
+  window.open(`https://www.google.com/maps/search/${q}`, "_blank", "noopener");
+}
+
+/* ==========================
+   5) HIDDEN ADMIN MODE (tap 5 times)
+========================== */
+let taps = 0;
+let tapTimer = null;
+
+function toggleAdmin(e){
+  if(e) e.preventDefault();
+  taps++;
+  clearTimeout(tapTimer);
+  tapTimer = setTimeout(()=> taps=0, 700);
+  if(taps >= 5){
+    admin = !admin;
+    taps = 0;
+    render();
+    if(admin) alert("Admin mode ON ✅");
+    else alert("Admin mode OFF");
+  }
+}
+
+/* ==========================
+   6) EDITOR MODAL
+========================== */
+function openEditor(){
+  document.getElementById("modalBack").style.display = "flex";
+  loadJson();
+  const donate = localStorage.getItem(KEY_DONATE) || "";
+  document.getElementById("donateLink").value = donate;
+}
+function closeEditor(evt){
+  if(evt && evt.target && evt.target.id !== "modalBack") return;
+  document.getElementById("modalBack").style.display = "none";
+}
+function loadJson(){
+  document.getElementById("jsonBox").value = JSON.stringify(state, null, 2);
+}
+function saveJson(){
+  try{
+    const parsed = JSON.parse(document.getElementById("jsonBox").value);
+    if(!Array.isArray(parsed)) throw new Error("JSON must be an array of day objects.");
+    // Ensure ids
+    for(const d of parsed){
+      if(!d.id) d.id = crypto.randomUUID ? crypto.randomUUID() : ("id_"+Math.random().toString(16).slice(2));
+      if(!d.photos) d.photos = [];
+      if(!d.tags) d.tags = [];
+    }
+    state = parsed;
+    saveTimeline(state);
+    render();
+    alert("Saved ✅");
+  }catch(err){
+    alert("Could not save JSON:\n" + err.message);
+  }
+}
+function copyJson(){
+  const txt = document.getElementById("jsonBox").value;
+  navigator.clipboard?.writeText(txt).then(()=>alert("Copied ✅")).catch(()=>prompt("Copy:", txt));
+}
+function downloadJson(){
+  const blob = new Blob([document.getElementById("jsonBox").value], {type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "superjerrys_timeline.json";
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+function importJsonFile(file){
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    document.getElementById("jsonBox").value = String(reader.result || "");
+  };
+  reader.readAsText(file);
+}
+
+/* ==========================
+   7) ADMIN DAY EDIT
+========================== */
+function addDay(){
+  if(!admin){ alert("Enable Admin mode first (tap Hidden Admin 5x)."); return; }
+  const id = crypto.randomUUID ? crypto.randomUUID() : ("id_"+Math.random().toString(16).slice(2));
+  state.unshift({
+    id,
+    day: `Day ${state.length + 1}`,
+    date: "",
+    title: "New stage",
+    notes: "",
+    route: "",
+    photos: [],
+    tags: []
+  });
+  saveTimeline(state);
+  render();
+  loadJson();
+}
+
+function editDay(id){
+  const d = state.find(x=>x.id===id);
+  if(!d) return;
+  const day = prompt("Day label (e.g. Day 4):", d.day) ?? d.day;
+  const date = prompt("Date / summary:", d.date || "") ?? (d.date||"");
+  const title = prompt("Title (e.g. Arran → Gretna):", d.title) ?? d.title;
+  const notes = prompt("Notes:", d.notes || "") ?? (d.notes||"");
+  const route = prompt("Route link (optional):", d.route || "") ?? (d.route||"");
+  const tags = prompt("Tags (comma separated):", (d.tags||[]).join(", ")) ?? (d.tags||[]).join(", ");
+
+  d.day = day;
+  d.date = date;
+  d.title = title;
+  d.notes = notes;
+  d.route = route;
+  d.tags = tags.split(",").map(s=>s.trim()).filter(Boolean);
+
+  saveTimeline(state);
+  render();
+  loadJson();
+}
+
+function deleteDay(id){
+  if(!confirm("Delete this day?")) return;
+  state = state.filter(x=>x.id!==id);
+  saveTimeline(state);
+  render();
+  loadJson();
+}
+
+function removePhoto(dayId, idx){
+  const d = state.find(x=>x.id===dayId);
+  if(!d) return;
+  d.photos.splice(idx,1);
+  saveTimeline(state);
+  render();
+  loadJson();
+}
+
+/* ==========================
+   8) PHOTO PICKER (local previews)
+========================== */
+function pickPhotos(dayId){
+  if(!admin){ alert("Enable Admin mode first."); return; }
+  const inp = document.createElement("input");
+  inp.type = "file";
+  inp.accept = "image/*";
+  inp.multiple = true;
+  inp.onchange = () => {
+    const files = Array.from(inp.files || []);
+    if(!files.length) return;
+    const d = state.find(x=>x.id===dayId);
+    if(!d) return;
+    // Store as data URLs (works offline, but can be large)
+    let pending = files.length;
+    for(const f of files){
+      const r = new FileReader();
+      r.onload = () => {
+        d.photos.push(String(r.result));
+        pending--;
+        if(pending===0){
+          saveTimeline(state);
+          render();
+          loadJson();
+        }
+      };
+      r.readAsDataURL(f);
+    }
+  };
+  inp.click();
+}
+
+/* ==========================
+   9) DONATION LINK
+========================== */
+function saveDonate(){
+  const link = document.getElementById("donateLink").value.trim();
+  localStorage.setItem(KEY_DONATE, link);
+  alert("Donation link saved ✅");
+}
+function openDonate(){
+  const link = (localStorage.getItem(KEY_DONATE) || "").trim();
+  if(!link) return alert("No donation link saved yet.");
+  window.open(link, "_blank", "noopener");
+}
+
+/* ==========================
+   10) RESET DEMO
+========================== */
+function resetDemo(){
+  if(!confirm("Reset to demo data? This overwrites your saved timeline on this device.")) return;
+  state = structuredClone(DEMO);
+  saveTimeline(state);
+  render();
+  loadJson();
+}
+
+/* ==========================
+   11) PWA MANIFEST + ICON (generated)
+========================== */
+(function setupManifest(){
+  // Minimal inline SVG icon (works as PWA icon on most platforms; iOS still prefers apple-touch-icon files)
+  const svg = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512">
+      <defs>
+        <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#0b1320"/>
+          <stop offset="1" stop-color="#1b2a6a"/>
+        </linearGradient>
+      </defs>
+      <rect width="512" height="512" rx="110" fill="url(#g)"/>
+      <circle cx="190" cy="330" r="70" fill="#4fd1c5" opacity=".95"/>
+      <circle cx="350" cy="330" r="70" fill="#7aa7ff" opacity=".95"/>
+      <path d="M170 330 L235 240 L305 240 L355 330" stroke="#e8eff7" stroke-width="18" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M235 240 L280 190" stroke="#e8eff7" stroke-width="18" stroke-linecap="round"/>
+      <circle cx="292" cy="180" r="16" fill="#e8eff7"/>
+      <text x="50%" y="430" text-anchor="middle" font-size="54" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto" fill="#e8eff7" opacity=".95">Super Jerrys</text>
+    </svg>
+  `.trim();
+
+  const iconData = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+
+  // Apple touch icon (best effort)
+  const apple = document.createElement("link");
+  apple.rel = "apple-touch-icon";
+  apple.href = iconData;
+  document.head.appendChild(apple);
+
+  // Manifest via Blob URL
+  const manifest = {
+    name: "Super Jerrys – End to End",
+    short_name: "Super Jerrys",
+    start_url: "./",
+    display: "standalone",
+    background_color: "#071022",
+    theme_color: "#071022",
+    icons: [
+      { src: iconData, sizes: "512x512", type: "image/svg+xml", purpose: "any maskable" }
+    ]
+  };
+
+  const blob = new Blob([JSON.stringify(manifest)], {type:"application/manifest+json"});
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement("link");
+  link.rel = "manifest";
+  link.href = url;
+  document.head.appendChild(link);
+})();
+
+/* ==========================
+   12) OFFLINE CACHE (service worker in-file)
+========================== */
+(function setupSW(){
+  if(!("serviceWorker" in navigator)) return;
+
+  const swCode = `
+    const CACHE = "superjerrys-cache-v1";
+    self.addEventListener("install", (e) => {
+      e.waitUntil(caches.open(CACHE).then(c => c.addAll(["./"])));
+      self.skipWaiting();
+    });
+    self.addEventListener("activate", (e) => {
+      e.waitUntil(self.clients.claim());
+    });
+    self.addEventListener("fetch", (e) => {
+      e.respondWith(
+        caches.match(e.request).then(r => r || fetch(e.request).then(res => {
+          // Cache navigations + same-origin basics
+          try{
+            const url = new URL(e.request.url);
+            if(url.origin === location.origin){
+              const copy = res.clone();
+              caches.open(CACHE).then(c => c.put(e.request, copy));
+            }
+          }catch{}
+          return res;
+        }).catch(()=>caches.match("./")))
+      );
+    });
+  `;
+  const blob = new Blob([swCode], {type:"text/javascript"});
+  const swUrl = URL.createObjectURL(blob);
+
+  navigator.serviceWorker.register(swUrl).catch(()=>{});
+})();
+
+/* Boot */
+render();
 </script>
-
 </body>
 </html>
