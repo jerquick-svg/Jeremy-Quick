@@ -762,3 +762,7 @@ render();
 </script>
 </body>
 </html>
+.card p {
+  max-height: 60vh;
+  overflow-y: auto;
+}
